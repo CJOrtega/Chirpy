@@ -3,6 +3,6 @@ import { config } from "../config.js";
 
 
 export async function handlerReset(req: Request, res: Response): Promise<void> {
-    config.fileServerHits = 0;
+    config.api.fileServerHits = 0;
     res.status(200).send();
 }
