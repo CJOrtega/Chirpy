@@ -3,7 +3,7 @@ import { handlerReadiness } from "./api/readiness.js";
 import { middlewareLogResponses, middlewareMetricsInc } from "./api/middleware.js";
 import { handlerMetrics } from "./api/metrics.js";
 import { handlerReset } from "./api/reset.js";
-import { handlerChirpValidate } from "./api/chirps.js";
+import { handlerChirpValidate, handlerGetChirp } from "./api/chirps.js";
 import { errorHandler } from "./api/error.js";
 import postgres from "postgres";
 import { config } from "./config.js";
@@ -27,6 +27,7 @@ app.post('/admin/reset', handlerReset);
 app.post('/api/users', handlerUsers);
 app.post('/api/chirps', handlerChirpValidate);
 app.get('/api/chirps', handlerGetAllChirps);
+app.get('/api/chirps/:chirpId', handlerGetChirp);
 
 app.use(errorHandler);
 

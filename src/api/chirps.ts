@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { BadRequestError } from "./error.js";
-import { createChirp, getAllChirps } from "../db/queries/chirps.js";
+import { BadRequestError, NotFoundError } from "./error.js";
+import { createChirp, getAllChirps, getChirp } from "../db/queries/chirps.js";
 
 type Body = {
     "body": string,
@@ -46,4 +46,16 @@ export async function handlerChirpValidate(req: Request, res: Response): Promise
 export async function handlerGetAllChirps(_: Request, res: Response): Promise<void> {
     const allChirps = await getAllChirps();
     res.status(200).send(allChirps);
+}
+
+export async function handlerGetChirp(req: Request, res: Response): Promise<void> {
+    const { chirpId } = req.params;
+    if (typeof chirpId !== "string") {
+        throw new BadRequestError("request parameter is not a string");
+    }
+    const chirpDB = await getChirp(chirpId);
+    if (!chirpDB) {
+        throw new NotFoundError(`Chirp with id ${chirpId} was not found in database`);
+    }
+    res.send(chirpDB);
 }
