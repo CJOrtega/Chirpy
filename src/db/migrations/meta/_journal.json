@@ -15,6 +15,13 @@
       "when": 1780488781298,
       "tag": "0001_light_violations",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1780501348744,
+      "tag": "0002_tranquil_captain_cross",
+      "breakpoints": true
     }
   ]
 }
