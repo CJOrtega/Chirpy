@@ -8,6 +8,13 @@
       "when": 1780403662575,
       "tag": "0000_light_living_tribunal",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1780488781298,
+      "tag": "0001_light_violations",
+      "breakpoints": true
     }
   ]
 }

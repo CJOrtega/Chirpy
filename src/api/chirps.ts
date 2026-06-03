@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import { BadRequestError } from "./error.js";
+import { createChirp, getAllChirps } from "../db/queries/chirps.js";
 
 type Body = {
-    "body": string
+    "body": string,
+    "userId": string
 };
 
 type ValidResponse = {
@@ -34,6 +36,14 @@ export async function handlerChirpValidate(req: Request, res: Response): Promise
             return word;
         });
         response = {cleanedBody: respArr.join(" ")};
-        res.send(response);
-    } 
+        const createdChirp = await createChirp({
+                body: respArr.join(" "),
+                userId: reqBody.userId
+            });
+        res.status(201).send(createdChirp);
+    }
+}
+export async function handlerGetAllChirps(_: Request, res: Response): Promise<void> {
+    const allChirps = await getAllChirps();
+    res.status(200).send(allChirps);
 }
