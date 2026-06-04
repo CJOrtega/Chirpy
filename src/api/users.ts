@@ -27,5 +27,5 @@ export async function handlerUsers(req: Request, res: Response): Promise<void> {
         createdAt: createdUser.createdAt,
         updatedAt: createdUser.updatedAt,
         email: createdUser.email
-    });
+    } satisfies UserResponseOmitPassword);
 }
