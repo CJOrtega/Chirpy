@@ -22,6 +22,13 @@
       "when": 1780501348744,
       "tag": "0002_tranquil_captain_cross",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1780577037855,
+      "tag": "0003_kind_power_pack",
+      "breakpoints": true
     }
   ]
 }

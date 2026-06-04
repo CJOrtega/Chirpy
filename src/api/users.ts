@@ -29,3 +29,4 @@ export async function handlerUsers(req: Request, res: Response): Promise<void> {
         email: createdUser.email
     } satisfies UserResponseOmitPassword);
 }
+

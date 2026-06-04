@@ -24,8 +24,11 @@ export const config: Config = {
         url: envOrThrow("DB_URL"),
         migrationConfig: migrationConfig
     },
-    jwtSecret: envOrThrow("SECRET")
-};
+    jwt: {
+        defaultDuration: 3600,
+        secret: envOrThrow("SECRET")
+    }
+}
 
 export type APIConfig = {
     fileServerHits: number,
@@ -41,7 +44,10 @@ export type DBConfig = {
 export type Config = {
     api: APIConfig;
     db: DBConfig;
-    jwtSecret: string;
+    jwt: {
+        defaultDuration: number,
+        secret: string
+    }
 };
 
 

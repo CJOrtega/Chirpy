@@ -6,7 +6,6 @@ import { config } from "../config.js";
 
 type Body = {
     "body": string,
-    "userId": string
 };
 
 type ValidResponse = {
@@ -24,7 +23,7 @@ type CleanedResponse = {
 export async function handlerChirpValidate(req: Request, res: Response): Promise<void> {
     const reqBody: Body = req.body;
     const token = getBearerToken(req);
-    const jwtUserId = validateJWT(token, config.jwtSecret);
+    const jwtUserId = validateJWT(token, config.jwt.secret);
     if (reqBody.body.length > 140) {
         throw new BadRequestError("Chirp is too long. Max length is 140");
         //response = {error: "Chirp is too long"}
