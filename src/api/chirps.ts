@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
-import { BadRequestError, NotFoundError } from "./error.js";
+import { BadRequestError, NotFoundError, UnauthorizedError } from "./error.js";
 import { createChirp, getAllChirps, getChirp } from "../db/queries/chirps.js";
+import { getBearerToken, validateJWT } from "../auth.js";
+import { config } from "../config.js";
 
 type Body = {
     "body": string,
@@ -20,29 +22,29 @@ type CleanedResponse = {
 }
 
 export async function handlerChirpValidate(req: Request, res: Response): Promise<void> {
-    const reqBody: Body = req.body
-    let response: ValidResponse | ErrorResponse | CleanedResponse;
+    const reqBody: Body = req.body;
+    const token = getBearerToken(req);
+    const jwtUserId = validateJWT(token, config.jwtSecret);
     if (reqBody.body.length > 140) {
         throw new BadRequestError("Chirp is too long. Max length is 140");
         //response = {error: "Chirp is too long"}
         //res.status(400).send(response);
-    } else {
-        const words = reqBody.body.split(" ");
-        const respArr = words.map((word) => {
-            let lower = word.toLowerCase();
-            if (lower === "kerfuffle" || lower === "sharbert" || lower === "fornax") {
-                return "****";
-            }
-            return word;
+    } 
+    const words = reqBody.body.split(" ");
+    const respArr = words.map((word) => {
+        let lower = word.toLowerCase();
+        if (lower === "kerfuffle" || lower === "sharbert" || lower === "fornax") {
+            return "****";
+        }
+        return word;
+    });
+    const createdChirp = await createChirp({
+            body: respArr.join(" "),
+            userId: jwtUserId
         });
-        response = {cleanedBody: respArr.join(" ")};
-        const createdChirp = await createChirp({
-                body: respArr.join(" "),
-                userId: reqBody.userId
-            });
-        res.status(201).send(createdChirp);
-    }
+    res.status(201).send(createdChirp);
 }
+
 export async function handlerGetAllChirps(_: Request, res: Response): Promise<void> {
     const allChirps = await getAllChirps();
     res.status(200).send(allChirps);

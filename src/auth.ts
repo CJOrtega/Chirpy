@@ -1,6 +1,7 @@
 import * as argon2 from "argon2";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { BadRequestError, ForbiddenError } from "./api/error.js";
+import { BadRequestError, UnauthorizedError } from "./api/error.js";
+import { Request } from "express";
 
 export async function hashPassword(password: string): Promise<string> {
     let hash;
@@ -21,7 +22,7 @@ export async function checkPasswordHash(password: string, hash: string): Promise
         return await argon2.verify(hash, password);
             
     } catch(err) {
-        return false;
+        throw new UnauthorizedError("Incorrect login credentials")
     }
 }
 
@@ -39,16 +40,33 @@ export function makeJWT(userID: string, expiresIn: number, secret: string): stri
 }
 
 export function validateJWT(tokenString: string, secret: string): string {
+    let jwtInfo: string | JwtPayload;
     try {
-        const jwtInfo = jwt.verify(tokenString, secret);
-        if (typeof jwtInfo === "string") {
-            throw new BadRequestError("Invalid JWT");
-        }
-        if (typeof jwtInfo.sub !== "string") {
-            throw new BadRequestError("Invalid JWT");
-        }
-        return jwtInfo.sub;
+        jwtInfo = jwt.verify(tokenString, secret);
     } catch(err) {
-        throw new BadRequestError("Invalid JWT");
+        throw new UnauthorizedError("Invalid JWT");
     }
+
+    if (typeof jwtInfo === "string") {
+        throw new UnauthorizedError("Invalid JWT");
+    }
+    if (typeof jwtInfo.sub !== "string") {
+        throw new UnauthorizedError("Invalid JWT");
+    }
+    return jwtInfo.sub;
+}
+
+export function getBearerToken(req: Request): string {
+    const bearerHeader = req.get("Authorization");
+    if (!bearerHeader) {
+        throw new UnauthorizedError("Authorization header is missing");
+    }
+    const [bearer, jwtToken] = bearerHeader.trim().split(/\s+/);
+    if (bearer !== "Bearer") {
+        throw new UnauthorizedError("Header \"Authorization\" is not Bearer");
+    }
+    if (!jwtToken) {
+        throw new UnauthorizedError("JWT not in header");
+    }
+    return jwtToken;
 }
