@@ -39,3 +39,15 @@ export async function getUserFromRefreshToken(refreshTokenString: string) {
         .limit(1);
     return user;
 }
+
+export async function updateUser(userID: string, userEmail: string, userPassword: string) {
+    const [result] = await db
+        .update(users)
+        .set({
+            email: userEmail,
+            hashedPassword: userPassword
+        })
+        .where(eq(users.id, userID))
+        .returning();
+    return result;
+}

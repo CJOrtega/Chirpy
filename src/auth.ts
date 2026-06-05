@@ -70,7 +70,7 @@ export function getBearerToken(req: Request): string {
         throw new UnauthorizedError("Header \"Authorization\" is not Bearer");
     }
     if (!reqToken) {
-        throw new UnauthorizedError("JWT not in header");
+        throw new UnauthorizedError("Token not in header");
     }
     return reqToken;
 }
