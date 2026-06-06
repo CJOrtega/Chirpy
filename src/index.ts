@@ -3,7 +3,7 @@ import { handlerReadiness } from "./api/readiness.js";
 import { middlewareLogResponses, middlewareMetricsInc } from "./api/middleware.js";
 import { handlerMetrics } from "./api/metrics.js";
 import { handlerReset } from "./api/reset.js";
-import { handlerChirpValidate, handlerGetChirp } from "./api/chirps.js";
+import { handlerChirpValidate, handlerDeleteChirp, handlerGetChirp } from "./api/chirps.js";
 import { errorHandler } from "./api/error.js";
 import postgres from "postgres";
 import { config } from "./config.js";
@@ -34,7 +34,9 @@ app.get('/api/chirps', handlerGetAllChirps);
 app.get('/api/chirps/:chirpId', handlerGetChirp);
 app.post('/api/refresh', handlerRefresh);
 app.post('/api/revoke', handlerRevoke);
-app.put('/api/users', handlerUpdateUser)
+app.put('/api/users', handlerUpdateUser);
+app.delete('/api/chirps/:chirpId', handlerDeleteChirp);
+app.post('/api/polka/webhooks', handlerPolka);
 
 
 app.use(errorHandler);

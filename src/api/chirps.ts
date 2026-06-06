@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
-import { BadRequestError, NotFoundError, UnauthorizedError } from "./error.js";
-import { createChirp, getAllChirps, getChirp } from "../db/queries/chirps.js";
+import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError } from "./error.js";
+import { createChirp, deleteChirp, getAllChirps, getChirp } from "../db/queries/chirps.js";
 import { getBearerToken, validateJWT } from "../auth.js";
 import { config } from "../config.js";
+import { getUserFromRefreshToken } from "../db/queries/users.js";
 
 type Body = {
     "body": string,
@@ -59,4 +60,31 @@ export async function handlerGetChirp(req: Request, res: Response): Promise<void
         throw new NotFoundError(`Chirp with id ${chirpId} was not found in database`);
     }
     res.send(chirpDB);
+}
+
+export async function handlerDeleteChirp(req: Request, res: Response): Promise<void> {
+    const { chirpId } = req.params;
+    const token = getBearerToken(req);
+
+    if (typeof chirpId !== "string") {
+        throw new BadRequestError("Invalid parameter");
+    }
+
+    const chirpDB = await getChirp(chirpId);
+
+    if (!chirpDB) {
+        throw new NotFoundError("Could not find the chirp in the database");
+    }
+
+    const userDB = validateJWT(token, config.jwt.secret);
+
+    if (chirpDB.userId !== userDB) {
+        throw new ForbiddenError("Can't delete a chirp that isn't yours");
+    }
+
+    const result = deleteChirp(chirpDB.id);
+    if (!result) {
+        res.status(404).send();
+    }
+    res.status(204).send();
 }
