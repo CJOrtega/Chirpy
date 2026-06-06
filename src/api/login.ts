@@ -11,7 +11,7 @@ type BodyLogin = {
     password: string
 }
 
-type UserResponseWithToken = UserResponseOmitPassword & { token: string, refreshToken: string };
+type UserResponseWithToken = UserResponseOmitPassword & { token: string, refreshToken: string, isChirpyRed: boolean };
 
 export async function handlerLogin(req: Request, res: Response): Promise<void> {
     const userLogin: BodyLogin = req.body;
@@ -31,7 +31,8 @@ export async function handlerLogin(req: Request, res: Response): Promise<void> {
             updatedAt: user.updatedAt,
             email: user.email,
             token: token,
-            refreshToken: refreshToken.token
+            refreshToken: refreshToken.token,
+            isChirpyRed: user.IsChirpyRed
         } satisfies UserResponseWithToken);
     } else {
         throw new UnauthorizedError("incorrect email or password");

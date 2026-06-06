@@ -5,7 +5,7 @@ import { BadRequestError, UnauthorizedError } from "./error.js";
 import { getBearerToken, hashPassword, validateJWT } from "../auth.js";
 import { config } from "../config.js";
 
-export type UserResponseOmitPassword = Omit<NewUser, "hashedPassword">;
+export type UserResponseOmitPassword = Omit<NewUser, "hashedPassword"> & {isChirpyRed: boolean};
 type User = {
     password: string,
     email: string
@@ -27,7 +27,8 @@ export async function handlerUsers(req: Request, res: Response): Promise<void> {
         id: createdUser.id,
         createdAt: createdUser.createdAt,
         updatedAt: createdUser.updatedAt,
-        email: createdUser.email
+        email: createdUser.email,
+        isChirpyRed: createdUser.IsChirpyRed
     } satisfies UserResponseOmitPassword);
 }
 type UpdateUserRequest = {
@@ -51,5 +52,6 @@ export async function handlerUpdateUser(req: Request, res: Response): Promise<vo
         email: updatedUser.email,
         createdAt: updatedUser.createdAt,
         updatedAt: updatedUser.updatedAt,
+        isChirpyRed: updatedUser.IsChirpyRed
     } satisfies UserResponseOmitPassword)
 }

@@ -79,3 +79,18 @@ export function makeRefreshToken(): string {
     const data = randomBytes(32);
     return data.toString("hex")
 }
+
+export function getApiKey(req: Request): string {
+    const apiHeader = req.get("Authorization");
+    if (!apiHeader) {
+        throw new UnauthorizedError("Authorization header is missing");
+    }
+    const [key, apiKey] = apiHeader.trim().split(/\s+/);
+    if (key !== "ApiKey") {
+        throw new UnauthorizedError("Header \"Authorization\" is not ApiKey");
+    }
+    if (!apiKey) {
+        throw new UnauthorizedError("Token not in header");
+    }
+    return apiKey;
+}

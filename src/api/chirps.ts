@@ -76,9 +76,9 @@ export async function handlerDeleteChirp(req: Request, res: Response): Promise<v
         throw new NotFoundError("Could not find the chirp in the database");
     }
 
-    const userDB = validateJWT(token, config.jwt.secret);
+    const userIDFromJWT = validateJWT(token, config.jwt.secret);
 
-    if (chirpDB.userId !== userDB) {
+    if (chirpDB.userId !== userIDFromJWT) {
         throw new ForbiddenError("Can't delete a chirp that isn't yours");
     }
 
