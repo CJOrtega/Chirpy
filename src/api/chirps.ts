@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError } from "./error.js";
-import { createChirp, deleteChirp, getAllChirps, getChirp } from "../db/queries/chirps.js";
+import { createChirp, deleteChirp, getAllChirps, getChirp, getChirpsByUserId } from "../db/queries/chirps.js";
 import { getBearerToken, validateJWT } from "../auth.js";
 import { config } from "../config.js";
 import { getUserFromRefreshToken } from "../db/queries/users.js";
@@ -45,13 +45,23 @@ export async function handlerChirpValidate(req: Request, res: Response): Promise
     res.status(201).send(createdChirp);
 }
 
-export async function handlerGetAllChirps(_: Request, res: Response): Promise<void> {
+export async function handlerGetAllChirps(req: Request, res: Response): Promise<void> {
+    const { authorId } = req.query;
+
+    if (typeof authorId === "string") {
+        const result = await getChirpsByUserId(authorId);
+        if (result) {
+            res.send(result);
+            return
+        }
+    }
     const allChirps = await getAllChirps();
     res.status(200).send(allChirps);
 }
 
 export async function handlerGetChirp(req: Request, res: Response): Promise<void> {
     const { chirpId } = req.params;
+
     if (typeof chirpId !== "string") {
         throw new BadRequestError("request parameter is not a string");
     }
