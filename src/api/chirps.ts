@@ -47,16 +47,22 @@ export async function handlerChirpValidate(req: Request, res: Response): Promise
 
 export async function handlerGetAllChirps(req: Request, res: Response): Promise<void> {
     const { authorId } = req.query;
+    const { sort } = req.query;
 
     if (typeof authorId === "string") {
         const result = await getChirpsByUserId(authorId);
         if (result) {
-            res.send(result);
+            res.send(result.sort((a, b) => 
+                sort === "desc" ? b.createdAt.getTime() - a.createdAt.getTime() :
+                a.createdAt.getTime() - b.createdAt.getTime()));
             return
         }
     }
+
     const allChirps = await getAllChirps();
-    res.status(200).send(allChirps);
+    res.status(200).send(allChirps.sort((a, b) => 
+                sort === "desc" ? b.createdAt.getTime() - a.createdAt.getTime() :
+                a.createdAt.getTime() - b.createdAt.getTime()));
 }
 
 export async function handlerGetChirp(req: Request, res: Response): Promise<void> {

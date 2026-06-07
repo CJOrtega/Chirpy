@@ -41,7 +41,8 @@ export async function deleteChirp(chirpId: string) {
 export async function getChirpsByUserId(userId: string) {
     const result = await db
         .select({
-            body: chirps.body
+            body: chirps.body,
+            createdAt: chirps.createdAt
         }).from(chirps)
         .innerJoin(users, eq(users.id, chirps.userId))
         .where(eq(users.id, userId));
